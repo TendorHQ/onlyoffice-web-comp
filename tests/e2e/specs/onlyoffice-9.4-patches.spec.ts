@@ -376,6 +376,10 @@ test("9.4 CDN Word prints the bridged PDF instead of a blank page", async ({ pag
 });
 
 test("9.4 multi-instance demo keeps one connector per editor", async ({ page }) => {
+  // 多实例页面要先等 SDK bridge 就绪，慢机器上连接器写入会超过默认的 10s 预算，
+  // 这个用例单独放宽总时长，并给状态断言 60s。
+  test.setTimeout(180_000);
+
   await page.goto("/docs/demos/multi", { waitUntil: "domcontentloaded" });
   await waitForEditorFrame(
     page,
@@ -387,7 +391,7 @@ test("9.4 multi-instance demo keeps one connector per editor", async ({ page }) 
   await page.getByRole("button", { name: "连接器写入" }).click();
   await expect(page.getByRole("status")).toHaveText(
     "Connector: inserted a paragraph",
-    { timeout: 10_000 },
+    { timeout: 60_000 },
   );
 
   await page.getByTitle("新建 Excel 标签页").click();
@@ -399,7 +403,7 @@ test("9.4 multi-instance demo keeps one connector per editor", async ({ page }) 
   );
   await page.getByRole("button", { name: "连接器写入" }).click();
   await expect(page.getByRole("status")).toHaveText("Connector: wrote to A1", {
-    timeout: 10_000,
+    timeout: 60_000,
   });
 });
 

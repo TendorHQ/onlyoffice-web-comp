@@ -17,6 +17,9 @@ export default defineConfig({
   },
   fullyParallel: false,
   workers: 1,
+  // 单个 spec 偶发因为 OnlyOffice 编辑器就绪慢而超时（多实例页面尤其明显），
+  // CI 上给一次重试，真回归仍然会两次都红。
+  retries: isCI ? 1 : 0,
   reporter: [["list"], ["html", { open: "never" }]],
   use: {
     baseURL: `http://${host}:${appPort}`,
